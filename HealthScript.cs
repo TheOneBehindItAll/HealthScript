@@ -1,38 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public enum Type
+{
+    player,
+    enemy
+}
 public class HealthScript : MonoBehaviour
 {
+    //What type of entity the objest is
+    public Type type;
+
     //Used for calculating the damage that the player takes and how much health the enemys have
-    public int dificultyMode;
-    //Used for calculating the damage the player does (Default is 1)
-    public int playerDamage = 1;
+    public int damageRecive;
+
     //Curent objects health
-    public int hp;
+    int hp;
+
     //curent objects maximum health
     public int maxHP;
+
     //The curent objects animator component
     public Animator animator;
+
     //How long the object can invincibilty for after getting hit
     public float waitSeconds;
-    //Defines weather the object is the player or an enemy
-    public bool enemy;
+
+
     //The objects sprite renderer component
     public SpriteRenderer sp;
+
     //The tag of the object that this object takes damage from
-    public string tagName = "Sword";
+    public string tagName;
+
     //Defines if the curent object can take damage
-    public bool hitCoolDown;
+     bool hitCoolDown;
+
     //objects position (To stop moving during Iframes;
     Vector2 position;
 
     void Start()
     {
         hitCoolDown = true;
-        if(dificultyMode == 0)
-            dificultyMode = 1;
-        if(enemy)
-            maxHP = maxHP * dificultyMode;
+        if(damageRecive == 0)
+            damageRecive = 1;
         hp = maxHP;
     }
     private void Update()
@@ -52,16 +64,16 @@ public class HealthScript : MonoBehaviour
                 TakeDamage(1);
             }
         }
+         
+              
+
     }
     public void TakeDamage(int amount)
     {
         //This applys damage to the curent objects health
         if (sp)
             StartCoroutine(changeColor());
-        if (!enemy)
-            hp -= amount * dificultyMode;
-        else
-            hp -= amount * playerDamage;
+        hp -= amount * damageRecive;
         if (hp <= 0)
             Die();
     }
@@ -85,20 +97,17 @@ public class HealthScript : MonoBehaviour
         yield return new WaitForSeconds(waitSeconds);
         hitCoolDown = true;
     }
-   
     void Die()
     {
         //Sets the object to become inactive after heath drops to zero
-        if (enemy)
+        if (type == Type.enemy)
             gameObject.SetActive(false);
         else
-        {
             gameObject.SetActive(false);
             PlayerDie();
-        }
     }
     public void PlayerDie()
     {
-        //Player Death Code Here
+        //optional code that runs on death
     }
 }
